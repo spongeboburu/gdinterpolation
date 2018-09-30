@@ -8,7 +8,7 @@ script = ExtResource( 1 )
 _sections_unfolded = [ "Transform" ]
 
 [node name="Line2D" type="Line2D" parent="."]
-points = PoolVector2Array( 256, 0, 256, 1024 )
+points = PoolVector2Array( 480, 0, 480, 1024 )
 width = 10.0
 default_color = Color( 0.4, 0.5, 1, 1 )
 texture_mode = -1094713346
@@ -17,7 +17,7 @@ round_precision = 8
 _sections_unfolded = [ "points" ]
 
 [node name="Line2D2" type="Line2D" parent="."]
-points = PoolVector2Array( 768, 0, 768, 1024 )
+points = PoolVector2Array( 1504, 0, 1504, 1024 )
 width = 10.0
 default_color = Color( 0.4, 0.5, 1, 1 )
 texture_mode = -1094713346
