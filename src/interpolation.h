@@ -127,6 +127,20 @@ public:
      */
     Variant get_value(void);
 
+    /**
+     * Return the current value for the interpolation based on timestep and duration.
+     */
+    Variant get_value_for_timestep(real_t timestep);
+    
+    /**
+     * Return the current factor for the interpolation based on timestep and duration.
+     */
+    float get_factor(void);
+
+    /**
+     * Return the factor for the interpolation based on timestep and duration.
+     */
+    float get_factor_for_timestep(real_t timestep);
     
 private:
     int _function;

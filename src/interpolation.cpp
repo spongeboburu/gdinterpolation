@@ -9,14 +9,34 @@ void Interpolation::_register_methods()
     register_method((char *)"interpolation_factor", &Interpolation::interpolation_factor);
     register_method((char *)"interpolate", &Interpolation::interpolate);
     register_method((char *)"get_value", &Interpolation::get_value);
-    register_property((char *)"function", &Interpolation::_function, (int)0);
-    register_property((char *)"operation", &Interpolation::_operation, (int)0);
-    register_property((char *)"start", &Interpolation::_start, Variant((real_t)0.0));
-    register_property((char *)"end", &Interpolation::_end, Variant((real_t)1.0));
-    register_property((char *)"duration", &Interpolation::_duration, (real_t)0.0);
-    register_property((char *)"loop", &Interpolation::_loop, (bool)false);
-    register_property((char *)"reverse", &Interpolation::_reverse, (bool)false);
-    register_property((char *)"timestep", &Interpolation::_timestep, (real_t)0.0);
+    register_method((char *)"get_value_for_timestep", &Interpolation::get_value_for_timestep);
+    register_method((char *)"get_factor", &Interpolation::get_factor);
+    register_method((char *)"get_factor_for_timestep", &Interpolation::get_factor_for_timestep);
+    godot_property_usage_flags usage = (godot_property_usage_flags)(GODOT_PROPERTY_USAGE_STORAGE|GODOT_PROPERTY_USAGE_EDITOR);
+    register_property((char *)"function", &Interpolation::_function, (int)0,
+		      GODOT_METHOD_RPC_MODE_DISABLED, usage,
+		      GODOT_PROPERTY_HINT_ENUM, "None,Back,Bezier,Boolean,Bounce,Circ,Cubic,Elastic,Expo,Linear,Quad,Quart,Quint,Sine,Square");
+    register_property((char *)"operation", &Interpolation::_operation, (int)0,
+		      GODOT_METHOD_RPC_MODE_DISABLED, usage,
+		      GODOT_PROPERTY_HINT_ENUM, "In,Out,InOut");
+    register_property((char *)"start", &Interpolation::_start, Variant((real_t)0.0),
+		      GODOT_METHOD_RPC_MODE_DISABLED, usage,
+		      GODOT_PROPERTY_HINT_NONE, "Start value");
+    register_property((char *)"end", &Interpolation::_end, Variant((real_t)1.0),
+		      GODOT_METHOD_RPC_MODE_DISABLED, usage,
+		      GODOT_PROPERTY_HINT_NONE, "End value");
+    register_property((char *)"duration", &Interpolation::_duration, (real_t)0.0,
+		      GODOT_METHOD_RPC_MODE_DISABLED, usage,
+		      GODOT_PROPERTY_HINT_NONE, "Duration");
+    register_property((char *)"loop", &Interpolation::_loop, (bool)false,
+		      GODOT_METHOD_RPC_MODE_DISABLED, usage,
+		      GODOT_PROPERTY_HINT_NONE, "Loop");
+    register_property((char *)"reverse", &Interpolation::_reverse, (bool)false,
+		      GODOT_METHOD_RPC_MODE_DISABLED, usage,
+		      GODOT_PROPERTY_HINT_NONE, "Reverse");
+    register_property((char *)"timestep", &Interpolation::_timestep, (real_t)0.0,
+		      GODOT_METHOD_RPC_MODE_DISABLED, usage,
+		      GODOT_PROPERTY_HINT_NONE, "Current timestep");
 }
 
 const char * FUNCTION_NAMES[Interpolation::MAX_FUNCTION] = {
@@ -98,6 +118,18 @@ real_t Interpolation::interpolation_factor(int function, int operation, real_t t
 	    return 0.0;
 	return 1.0;
     case FUNCTION_BOUNCE:
+	if (factor < 1 / 2.75) {
+	    return 7.5625 * factor * factor;
+	} else if (factor < 2 / 2.75) {
+	    real_t postFix = factor - 1.5 / 2.75;
+	    return 7.5625 * postFix * postFix + 0.75;
+	} else if (factor < 2.5 / 2.75) {
+	    real_t postFix = factor - 2.25 / 2.75;
+	    return 7.5625 * postFix * postFix + 0.9375;
+	} else {
+	    real_t postFix = factor - 2.625 / 2.75;
+	    return 7.5625 * postFix * postFix + 0.984375;
+	}
 	break;
     case FUNCTION_CIRC:
 	// return -c * (sqrt(1 - (t/=d)*t) - 1) + b;
@@ -292,3 +324,17 @@ Variant Interpolation::get_value(void) {
     return interpolate(_function, _operation, _timestep / _duration, _start, _end, _loop, _reverse);
 }
 
+Variant Interpolation::get_value_for_timestep(real_t timestep)
+{
+    return interpolate(_function, _operation, timestep / _duration, _start, _end, _loop, _reverse);
+}
+
+float Interpolation::get_factor(void) {
+    return interpolation_factor(_function, _operation, _timestep / _duration, _loop, _reverse);
+}
+
+
+float Interpolation::get_factor_for_timestep(real_t timestep)
+{
+    return interpolation_factor(_function, _operation, timestep / _duration, _loop, _reverse);
+}
