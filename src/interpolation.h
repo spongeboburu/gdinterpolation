@@ -2,11 +2,11 @@
 #define INTERPOLATION_H
 
 #include <Godot.hpp>
-#include <Node.hpp>
+#include <Resource.hpp>
 
 namespace godot {
     
-class Interpolation : public godot::GodotScript<Node> {
+class Interpolation : public godot::GodotScript<Resource> {
     GODOT_CLASS(Interpolation)
 public:
 
@@ -90,89 +90,9 @@ public:
      */
     Variant get_value(void);
 
-    /**
-     * Get the function.
-     */
-    int get_function(void);
-
-    /**
-     * Set the function.
-     */
-    void set_function(int function);
-
-    /**
-     * Get the start value.
-     */
-    Variant get_start(void);
-
-    /**
-     * Set the function.
-     */
-    void set_start(Variant start);
-
-    /**
-     * Get the end value.
-     */
-    Variant get_end(void);
-
-    /**
-     * Set the function.
-     */
-    void set_end(Variant end);
-
-    /**
-     * Get the duration.
-     */
-    real_t get_duration(void);
-
-    /**
-     * Get the duration.
-     */
-    void set_duration(real_t duration);
-
-    /**
-     * Get the timestep.
-     */
-    real_t get_timestep(void);
-
-    /**
-     * Get the timestep.
-     */
-    void set_timestep(real_t timestep);
-    
-    /**
-     * Get the loop.
-     */
-    bool get_loop(void);
-
-    /**
-     * Get the loop.
-     */
-    void set_loop(bool loop);
-
-    /**
-     * Get the pingpong.
-     */
-    bool get_pingpong(void);
-
-    /**
-     * Get the pingpong.
-     */
-    void set_pingpong(bool pingpong);
-
-    /**
-     * Get the reverse.
-     */
-    bool get_reverse(void);
-
-    /**
-     * Get the reverse.
-     */
-    void set_reverse(bool reverse);
-
     
 private:
-    Function _function;
+    int _function;
     Variant _start;
     Variant _end;
     real_t _duration;

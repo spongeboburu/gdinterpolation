@@ -1,4 +1,5 @@
 BUILD_DIR = build
+INSTALL_DIR = interpolation-test
 
 .PHONY: all
 all: build
@@ -16,8 +17,8 @@ $(BUILD_DIR)/interpolation.gdns: interpolation.gdns
 	cp -f interpolation.gdns $(BUILD_DIR)/interpolation.gdns
 
 .PHONY: install
-install: build
-	rsync -rv $(BUILD_DIR)/* ~/projects/godot_stuff/plugintest/
+install: build 
+	rsync -rv $(BUILD_DIR)/* $(INSTALL_DIR)/
 
 .PHONY: clean
 clean:

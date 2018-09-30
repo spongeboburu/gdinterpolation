@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Test.gd" type="Script" id=1]
+
+[node name="Test" type="Node2D"]
+scale = Vector2( 0.5, 0.5 )
+script = ExtResource( 1 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PoolVector2Array( 256, 0, 256, 1024 )
+width = 10.0
+default_color = Color( 0.4, 0.5, 1, 1 )
+texture_mode = -1094713346
+sharp_limit = 2.0
+round_precision = 8
+_sections_unfolded = [ "points" ]
+
+[node name="Line2D2" type="Line2D" parent="."]
+points = PoolVector2Array( 768, 0, 768, 1024 )
+width = 10.0
+default_color = Color( 0.4, 0.5, 1, 1 )
+texture_mode = -1094713346
+sharp_limit = 2.0
+round_precision = 8
+_sections_unfolded = [ "points" ]
+

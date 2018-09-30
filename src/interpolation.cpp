@@ -11,22 +11,14 @@ void Interpolation::_register_methods()
     register_method((char *)"is_finished", &Interpolation::is_finished);
     register_method((char *)"get_value", &Interpolation::get_value);
     register_method((char *)"process", &Interpolation::process);
-    register_method((char *)"get_function", &Interpolation::get_function);
-    register_method((char *)"set_function", &Interpolation::set_function);
-    register_method((char *)"get_start", &Interpolation::get_start);
-    register_method((char *)"set_start", &Interpolation::set_start);
-    register_method((char *)"get_end", &Interpolation::get_end);
-    register_method((char *)"set_end", &Interpolation::set_end);
-    register_method((char *)"get_duration", &Interpolation::get_duration);
-    register_method((char *)"set_duration", &Interpolation::set_duration);
-    register_method((char *)"get_timestep", &Interpolation::get_timestep);
-    register_method((char *)"set_timestep", &Interpolation::set_timestep);
-    register_method((char *)"get_loop", &Interpolation::get_loop);
-    register_method((char *)"set_loop", &Interpolation::set_loop);
-    register_method((char *)"get_pingpong", &Interpolation::get_pingpong);
-    register_method((char *)"set_pingpong", &Interpolation::set_pingpong);
-    register_method((char *)"get_reverse", &Interpolation::get_reverse);
-    register_method((char *)"set_reverse", &Interpolation::set_reverse);
+    register_property((char *)"function", &Interpolation::_function, (int)0);
+    register_property((char *)"start", &Interpolation::_start, Variant((real_t)0.0));
+    register_property((char *)"end", &Interpolation::_end, Variant((real_t)1.0));
+    register_property((char *)"duration", &Interpolation::_duration, (real_t)0.0);
+    register_property((char *)"timestep", &Interpolation::_timestep, (real_t)0.0);
+    register_property((char *)"loop", &Interpolation::_loop, (bool)false);
+    register_property((char *)"pingpong", &Interpolation::_pingpong, (bool)false);
+    register_property((char *)"reverse", &Interpolation::_reverse, (bool)false);
 }
 
 real_t Interpolation::interpolation_factor(real_t tau, bool loop, bool pingpong, bool reverse) {
@@ -95,13 +87,46 @@ real_t Interpolation::interpolate_scalar(int function, real_t factor, real_t sta
 	// }
 	break;
     case FUNCTION_EASE_CIRC:
+	// return -c * (sqrt(1 - (t/=d)*t) - 1) + b;
+	return start -(end - start) * (sqrt(1 - factor * factor) - 1);
     case FUNCTION_EASE_CUBIC:
+	// return c*(t/=d)*t*t + b;
+	return start + (end - start) * factor * factor * factor;
     case FUNCTION_EASE_ELASTIC:
+	// if (t==0) return b;  if ((t/=d)==1) return b+c;  
+	// float p=d*.3f;
+	// float a=c; 
+	// float s=p/4;
+	// float postFix =a*pow(2,10*(t-=1)); // this is a fix, again, with post-increment operators
+	// return -(postFix * sin((t*d-s)*(2*PI)/p )) + b;
+	if (factor == 0)
+	    return start;
+	else if (factor == 1)
+	    return end;
+	else {
+	    real_t d = 1.0; // MISSING. Required?
+	    real_t p = d * 0.3;
+	    real_t a = (end - start); 
+	    real_t s = p / 4;
+	    real_t postFix = a * pow(2, 10 * (factor - 1));
+	    return -(postFix * sin((factor * d - s) * 6.283185307179586 / p )) + start;
+	}
+	break;
     case FUNCTION_EASE_EXPO:
+	// return (t==0) ? b : c * pow(2, 10 * (t/d - 1)) + b;
+	return (factor == 0) ? start : (end - start) * pow(2, 10 * (factor - 1)) + start;
     case FUNCTION_EASE_QUAD:
+	// return c*(t/=d)*t + b;
+	return start + (end - start) * factor * factor;
     case FUNCTION_EASE_QUART:
+	// return c*(t/=d)*t*t*t + b;
+	return start + (end - start) * factor * factor * factor * factor;
     case FUNCTION_EASE_QUINT:
+	// return c*(t/=d)*t*t*t*t + b;
+	return start + (end - start) * factor * factor * factor * factor * factor;
     case FUNCTION_EASE_SINE:
+	// return -c * cos(t/d * (PI/2)) + c + b;
+	return start - (end - start) * cos(factor * 1.5707963267948966) + (end - start);
     default:
 	break;
     }
@@ -265,82 +290,3 @@ Variant Interpolation::get_value(void) {
     return interpolate(_function, factor, _start, _end);
 }
 
-int Interpolation::get_function(void)
-{
-    return _function;
-}
-
-void Interpolation::set_function(int function)
-{
-    _function = (Function)function;
-}
-
-Variant Interpolation::get_start(void)
-{
-    return _start;
-}
-
-void Interpolation::set_start(Variant start)
-{
-    _start = start;
-}
-
-Variant Interpolation::get_end(void)
-{
-    return _end;
-}
-
-void Interpolation::set_end(Variant end)
-{
-    _end = end;
-}
-
-real_t Interpolation::get_duration(void)
-{
-    return _duration;
-}
-
-void Interpolation::set_duration(real_t duration)
-{
-    _duration = (duration > 0 ? duration : 0);
-}
-
-real_t Interpolation::get_timestep(void)
-{
-    return _timestep;
-}
-
-void Interpolation::set_timestep(real_t timestep)
-{
-    _timestep = timestep;
-}
-
-bool Interpolation::get_loop(void)
-{
-    return _loop;
-}
-
-void Interpolation::set_loop(bool loop)
-{
-    _loop = loop;
-}
-
-bool Interpolation::get_pingpong(void)
-{
-    return _pingpong;
-}
-
-void Interpolation::set_pingpong(bool pingpong)
-{
-    _pingpong = pingpong;
-}
-
-bool Interpolation::get_reverse(void)
-{
-    return _reverse;
-}
-
-void Interpolation::set_reverse(bool reverse)
-{
-    _reverse = reverse;
-}

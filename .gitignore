@@ -2,4 +2,8 @@ build
 .#*
 scrap.*
 *.os
-
+interpolation-test/*.gdns
+interpolation-test/*.gdnlib
+interpolation-test/bin
+interpolation-test/*.import
+.sconsign.dblite
